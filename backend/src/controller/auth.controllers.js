@@ -18,10 +18,10 @@ const signup = async (req, res) => {
     });
 
     if (userExists)
-      return res.status(409).send({
+      return res.send({
         success: false,
         message: "User with this email already exists.",
-      });
+      }).status(409);
     if (password < 6)
       return res.status(422).send({
         success: false,
@@ -39,6 +39,8 @@ const signup = async (req, res) => {
     return res.status(201).cookie("token", token).send({
       success: true,
       message: "User signup successful",
+      username: user.name,
+      email: user.email,
       token: token,
     });
   } catch (error) {
@@ -65,18 +67,18 @@ const login = async (req, res) => {
     });
 
     if (!userExists)
-      return res.status(409).send({
+      return res.send({
         success: false,
         message: "User not exists.",
-      });
+      }).status(409);
 
     const isMatch = await userExists.comparePassword(password);
 
     if (!isMatch)
-      return res.status(401).send({
+      return res.send({
         success: false,
         message: "Invalid email or password",
-      });
+      }).status(401);
 
     const token = createToken(userExists);
 
