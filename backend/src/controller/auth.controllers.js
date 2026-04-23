@@ -36,7 +36,11 @@ const signup = async (req, res) => {
 
     const token = createToken(user);
 
-    return res.status(201).cookie("token", token).send({
+    return res.status(201).cookie("token", token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: false
+    }).send({
       success: true,
       message: "User signup successful",
       username: user.name,
@@ -82,7 +86,11 @@ const login = async (req, res) => {
 
     const token = createToken(userExists);
 
-    return res.status(200).cookie("token", token).send({
+    return res.status(200).cookie("token", token, {
+      httpOnly: true,
+      sameSite: 'strict',
+      secure: false
+    }).send({
       success: true,
       message: "User login successful",
       token: token,

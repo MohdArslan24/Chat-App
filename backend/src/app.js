@@ -2,7 +2,10 @@ const express = require("express")
 const cookieParser = require("cookie-parser")
 const cors = require('cors')
 const checkForAuthCookie = require('./middlewares/protect')
+
+
 const auhtRoute = require('./routes/auth.routes')
+const userRoute = require('./routes/user.routes')
 
 const app = express()
 
@@ -20,5 +23,6 @@ app.get("/", (req, res) => {
 
 
 app.use("/api/auth", auhtRoute)
+app.use("/api/user", userRoute)
 
 module.exports = app

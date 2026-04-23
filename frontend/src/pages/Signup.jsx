@@ -7,6 +7,8 @@ import { FcGoogle } from "react-icons/fc";
 import { Oval } from 'react-loader-spinner'
 import axios from 'axios';
 import { serverURL } from '../main';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserData } from '../redux/userSlice';
 
 
 function Signup() {
@@ -17,10 +19,9 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
-
-
-
+  
   const handleSignup = async (e) => {
     e.preventDefault()
     setError('')
@@ -36,6 +37,7 @@ function Signup() {
       
       if (res.success) {
         localStorage.setItem('token', res.token)
+        dispatch(setUserData(res.data))
         navigate('/')
       } else {
         setError(res.data.message)

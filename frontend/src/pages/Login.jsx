@@ -7,6 +7,8 @@ import { FcGoogle } from "react-icons/fc";
 import { Oval } from 'react-loader-spinner'
 import { serverURL } from '../main';
 import axios from "axios";
+import { useDispatch } from "react-redux";
+
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -15,7 +17,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
+  const dispatch = useDispatch()
 
 //Login
   const handleLogin = async (e) => {
@@ -31,9 +33,10 @@ function Login() {
         
         if (res.success) {
           localStorage.setItem('token', res.token)
+          dispatch(setUserData(res.data))
           navigate('/')
         } else {
-          setError(res.data.message)
+          setError(res.data)
         }
       } catch (err) {
           console.log(err.data);
@@ -71,7 +74,7 @@ function Login() {
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error}
+            {error.message}
           </div>
         )}
 
