@@ -5,10 +5,10 @@ import { MdRemoveRedEye } from "react-icons/md";
 import { IoEyeOffSharp } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { Oval } from 'react-loader-spinner'
-import axios from 'axios';
-import { serverURL } from '../main';
+import axiosInstance from '../utils/axiosInstance';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserData } from '../redux/userSlice';
+import { jwtDecode } from 'jwt-decode';
 
 
 function Signup() {
@@ -28,16 +28,20 @@ function Signup() {
     setLoading(true)
     
     try {
-      let res = await axios.post(`${serverURL}/api/auth/signup`, {
+      let res = await axiosInstance.post('/api/auth/signup', {
             name,
             email,
             password,
-        }, {withCredentials: true})
+        })
      
       
-      if (res.success) {
-        localStorage.setItem('token', res.token)
-        dispatch(setUserData(res.data))
+      if (res.data.success) {
+        const token = res.data.token
+        localStorage.setItem('token', token)
+        
+        // Decode token to get user data
+        const decodedUser = jwtDecode(token)
+        dispatch(setUserData(decodedUser))
         navigate('/')
       } else {
         setError(res.data.message)

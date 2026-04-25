@@ -5,9 +5,10 @@ import { MdRemoveRedEye } from "react-icons/md";
 import { IoEyeOffSharp } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { Oval } from 'react-loader-spinner'
-import { serverURL } from '../main';
-import axios from "axios";
-import { useDispatch } from "react-redux";
+import axiosInstance from '../utils/axiosInstance';
+import { useDispatch, useSelector } from "react-redux";
+import { setUserData } from "../redux/userSlice";
+import { jwtDecode } from 'jwt-decode';
 
 
 function Login() {
@@ -18,6 +19,7 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch()
+  const {userData} = useSelector(state => state.user)
 
 //Login
   const handleLogin = async (e) => {
@@ -26,20 +28,23 @@ function Login() {
       setLoading(true)
       
       try {
-        let res = await axios.post(`${serverURL}/api/auth/login`, {
+        let res = await axiosInstance.post('/api/auth/login', {
               email,
               password,
-          }, {withCredentials: true})
-        
-        if (res.success) {
-          localStorage.setItem('token', res.token)
-          dispatch(setUserData(res.data))
+          })
+        if (res.data.success) {
+          const token = res.data.token
+          localStorage.setItem('token', token)
+          
+          // Decode token to get user data
+          const decodedUser = jwtDecode(token)
+          dispatch(setUserData(decodedUser))
           navigate('/')
         } else {
-          setError(res.data)
+          setError(res.data.message || 'Login failed')
         }
       } catch (err) {
-          console.log(err.data);
+          console.log(err);
           
         setError('Failed to login. Try again.')
       } finally {

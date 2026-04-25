@@ -38,7 +38,7 @@ const signup = async (req, res) => {
 
     return res.status(201).cookie("token", token, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'Strict',
       secure: false
     }).send({
       success: true,
@@ -69,7 +69,7 @@ const login = async (req, res) => {
     const userExists = await User.findOne({
       email,
     });
-
+    console.log(userExists)
     if (!userExists)
       return res.send({
         success: false,
@@ -88,7 +88,7 @@ const login = async (req, res) => {
 
     return res.status(200).cookie("token", token, {
       httpOnly: true,
-      sameSite: 'strict',
+      sameSite: 'Strict',
       secure: false
     }).send({
       success: true,
