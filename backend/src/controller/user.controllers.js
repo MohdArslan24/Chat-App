@@ -1,3 +1,5 @@
+const User = require('../models/user.model')
+
 
 const getCurrentUser = async (req, res) => {
     try {
@@ -12,6 +14,34 @@ const getCurrentUser = async (req, res) => {
     }
 }
 
+const getOtherUsers = async (req, res) => {
+    try {
+        const otherUsers = await User.find({
+            _id: {$ne: req.user._id}
+        })
+
+        if(!otherUsers) {
+            return res.send({
+                success: false,
+                message: 'No user found'
+            })
+        }
+
+         return res.send({
+                success: true,
+                message: 'Users found',
+                data: otherUsers
+            })
+
+    } catch (error) {
+        return res.send({
+        success: false,
+        message: error.message,
+    });
+    }
+}
+
 module.exports = {
-    getCurrentUser
+    getCurrentUser,
+    getOtherUsers
 }

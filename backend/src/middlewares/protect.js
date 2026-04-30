@@ -2,7 +2,7 @@ const {verifyToken} = require('../services/auth.services')
 
 const checkForAuthCookie = async (req, res, next) => {
     try {
-        let token = req.cookies.token;
+        const token = req.cookies.token;
         if (!token) {
             return res.send({
                 success: false,
@@ -10,7 +10,7 @@ const checkForAuthCookie = async (req, res, next) => {
             });
         }
         
-        let userPayload = await verifyToken(token);
+        const userPayload = await verifyToken(token);
         req.user = userPayload;
         next();
     } catch (error) {

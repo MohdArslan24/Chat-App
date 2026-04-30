@@ -6,6 +6,7 @@ const checkForAuthCookie = require('./middlewares/protect')
 
 const auhtRoute = require('./routes/auth.routes')
 const userRoute = require('./routes/user.routes')
+const messageRoute = require('./routes/message.routes')
 
 const app = express()
 
@@ -17,6 +18,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true}))
 app.use(cookieParser())
 
+
+
 app.get("/", (req, res) => {
     res.send("Server Running")
 })
@@ -24,5 +27,6 @@ app.get("/", (req, res) => {
 
 app.use("/api/auth", auhtRoute)
 app.use("/api/user", userRoute)
+app.use("/api/message", messageRoute)
 
 module.exports = app
