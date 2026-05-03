@@ -1,6 +1,7 @@
 const express = require("express")
 
 const {signup, login, logout} = require("../controller/auth.controllers")
+const checkForAuthCookie = require("../middlewares/protect")
 
 const router = express.Router()
 

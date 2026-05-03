@@ -107,7 +107,7 @@ const login = async (req, res) => {
 const logout = async (req, res) => {
     try {
         res.clearCookie("token")
-        return res.status(205).send({
+        return res.send({
             success: true,
             message: "User logout successfully"
         })
