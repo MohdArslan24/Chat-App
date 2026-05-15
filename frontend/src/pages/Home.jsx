@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchConversations } from '../store/chat/chatThunk';
 import { getOtherUsers } from "../store/user/userThunk";
 
 
@@ -14,13 +13,6 @@ export default function Home() {
   const { currentUser } = useSelector((state) => state.auth);
   const {SelectedUser} = useSelector(state => state.user);
 
-  useEffect(() => {
-    dispatch(fetchConversations());
-  }, [dispatch]);
-
-  // const activeChat = chats.find(c => {
-  //   return c.participants && c.participants.some(p => p._id === SelectedUser);
-  // });
 
    useEffect(() => {
     dispatch(getOtherUsers());

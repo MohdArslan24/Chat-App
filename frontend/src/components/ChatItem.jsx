@@ -8,7 +8,7 @@ function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
-export default function ChatItem({ chat, isActive }) {
+export default function ChatItem({ chat }) {
 
   const dispatch = useDispatch();
 
@@ -19,8 +19,7 @@ export default function ChatItem({ chat, isActive }) {
         dispatch(setSelectedUser(chat));
       }}
       className={cn(
-        "flex items-center px-5 py-3 cursor-pointer transition-colors duration-200",
-        isActive ? "bg-ig-hover" : "hover:bg-ig-hover",
+        "flex items-center px-5 py-3 cursor-pointer transition-colors duration-200 hover:bg-ig-hover",
       )}
     >
       <div className="relative">
