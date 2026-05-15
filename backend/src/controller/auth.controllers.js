@@ -42,7 +42,7 @@ const signup = async (req, res) => {
       secure: false
     }).send({
       success: true,
-      message: "User signup successful",
+      message: "Account created successfully",
       username: user.name,
       email: user.email,
       token: token,
@@ -69,7 +69,6 @@ const login = async (req, res) => {
     const userExists = await User.findOne({
       email,
     });
-    console.log(userExists)
     if (!userExists)
       return res.send({
         success: false,
@@ -93,6 +92,7 @@ const login = async (req, res) => {
     }).send({
       success: true,
       message: "User login successful",
+      userData: userExists,
       token: token,
     });
   } catch (error) {

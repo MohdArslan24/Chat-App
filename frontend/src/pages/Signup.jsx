@@ -3,10 +3,12 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { signupAPI } from "../api/auth.api.js";
+import { useDispatch } from "react-redux";
+import { registerUser } from "../store/auth/authThunk";
 
 const Signup = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -18,7 +20,10 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    signupAPI(formData, navigate);
+    const result = await dispatch(registerUser(formData));
+    if (result.type === "auth/registerUser/fulfilled") {
+      navigate('/');
+    }
   };
 
   const handleChange = (e) => {

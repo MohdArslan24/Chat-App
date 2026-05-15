@@ -2,20 +2,25 @@ import React from "react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import { loginAPI } from "../api/auth.api.js";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../store/auth/authThunk";
 
 const Login = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
+const { isAuthenticated, currentUser } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    loginAPI(formData, navigate);
+    const result = await dispatch(loginUser(formData));
+    if (result.type === "auth/loginUser/fulfilled") {
+      navigate('/');
+    }
   };
 
   const handleChange = (e) => {

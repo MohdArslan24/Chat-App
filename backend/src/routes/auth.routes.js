@@ -14,4 +14,7 @@ router.post("/login", login)
 //Logout Route
 router.post("/logout", logout)
 
+// Protected Route Example
+router.get("/protected", checkForAuthCookie)
+
 module.exports = router

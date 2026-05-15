@@ -6,8 +6,9 @@ const User = require("../models/user.model");
 const sendMessage = async (req, res) => {
   try {
     const{  receiverId } = req.params
-    const { message } = req.body;
     const senderId = req.user.id;
+    const { message } = req.body;
+    
 
     // Validation
     if (!receiverId || !message) {
@@ -18,13 +19,6 @@ const sendMessage = async (req, res) => {
     }
 
     console.log(senderId)
-
-    if (message.trim().length === 0) {
-      return res.status(422).send({
-        success: false,
-        message: "Message cannot be empty.",
-      });
-    }
 
     // Check if receiver exists
     const receiver = await User.findById(receiverId);
@@ -43,6 +37,13 @@ const sendMessage = async (req, res) => {
       });
     }
 
+     if (message.trim().length === 0) {
+      return res.status(422).send({
+        success: false,
+        message: "Message cannot be empty.",
+      });
+    }
+
     // Create message
     const newMessage = await Message.create({
       sender: senderId,
@@ -51,8 +52,6 @@ const sendMessage = async (req, res) => {
     });
 
     // Populate sender and receiver details
-    await newMessage.populate("sender", "name email image");
-    await newMessage.populate("receiver", "name email image");
 
     // Find or create conversation
     let conversation = await Conversation.findOne({
@@ -62,11 +61,13 @@ const sendMessage = async (req, res) => {
     if (!conversation) {
       conversation = await Conversation.create({
         participants: [senderId, receiverId],
+        messages: [newMessage._id],
         lastMessage: newMessage._id,
         lastMessageTime: newMessage.createdAt,
       });
     } else {
-      // Update last message in conversation
+      // Update conversation with new message
+      conversation.messages.push(newMessage._id);
       conversation.lastMessage = newMessage._id;
       conversation.lastMessageTime = newMessage.createdAt;
       await conversation.save();
@@ -88,11 +89,11 @@ const sendMessage = async (req, res) => {
 // Get messages between two users
 const getMessages = async (req, res) => {
   try {
-    const { receiverId } = req.params;
+    const otherParticipantId = req.params.receiverId;
     const senderId = req.user.id;
 
     // Validation
-    if (!receiverId) {
+    if (!otherParticipantId) {
       return res.status(422).send({
         success: false,
         message: "Receiver ID is required.",
@@ -100,18 +101,18 @@ const getMessages = async (req, res) => {
     }
 
     // Check if receiver exists
-    const receiver = await User.findById(receiverId);
+    const receiver = await User.findById(otherParticipantId);
     if (!receiver) {
       return res.status(404).send({
         success: false,
         message: "Receiver not found.",
       });
     }
-    console.log(senderId, receiverId)
+  
     // Get all messages between sender and receiver
     const conversation = await Conversation.findOne({
-      participants: { $all: [senderId, receiverId]},
-    }).populate("lastMessage")
+      participants: { $all: [senderId, otherParticipantId]},
+    }).populate("messages").populate("lastMessage")
 
     return res.status(200).send({
       success: true,

@@ -1,1 +1,41 @@
-@import "tailwindcss";
+@import "tailwindcss";@import "tailwindcss";
+
+@theme {
+  --color-ig-black: #000000;
+  --color-ig-dark-gray: #121212;
+  --color-ig-border: #262626;
+  --color-ig-hover: #1a1a1a;
+  --color-ig-blue: #3797F0;
+  --color-ig-text-gray: #8e8e8e;
+  --color-ig-message-received: #262626;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-ig-black);
+  color: white;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  overflow: hidden;
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #262626;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
