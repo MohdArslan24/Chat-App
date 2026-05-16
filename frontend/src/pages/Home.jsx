@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getOtherUsers } from "../store/user/userThunk";
+import {initializeSocket} from '../store/socket/socketSlice'
 
 
 //Components
@@ -10,13 +11,18 @@ import ChatWindow from '../components/ChatWindow';
 export default function Home() {
   const dispatch = useDispatch();
   const chats = useSelector((state) => state.chat.chats);
-  const { currentUser } = useSelector((state) => state.auth);
+  const { currentUser, isAuthenticated } = useSelector((state) => state.auth);
   const {SelectedUser} = useSelector(state => state.user);
 
 
    useEffect(() => {
     dispatch(getOtherUsers());
   }, []);
+
+  useEffect(() => {
+    if(!isAuthenticated) return;
+    dispatch(initializeSocket());
+  }, [isAuthenticated]);
 
  
 

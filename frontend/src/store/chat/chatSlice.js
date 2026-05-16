@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import api from "../../utils/axios";
-import { fetchConversations, sendMessage, getMessages } from "./chatThunk";
+import { sendMessage, getMessages } from "./chatThunk";
 
 const initialState = {
   chats: null, // List of conversations
@@ -37,9 +37,6 @@ const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchConversations.fulfilled, (state, action) => {
-        state.chats = action.payload;
-      })
       .addCase(sendMessage.fulfilled, (state, action) => {
         state.messages = [...state.messages, action.payload];
       })
