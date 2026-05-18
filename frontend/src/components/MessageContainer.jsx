@@ -37,7 +37,7 @@ function MessageContainer() {
                 messageBody={{
                   ...msg,
                   senderId: isMe ? "me" : msg.sender,
-                  //   senderAvatar: chat.avatar,
+                  senderAvatar: SelectedUser?.profileImage,
                 }}
                 showAvatar={showAvatar}
               />

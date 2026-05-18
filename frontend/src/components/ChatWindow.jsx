@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   Heart,
   Send,
+  UserRound
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
@@ -138,9 +139,7 @@ export default function ChatWindow() {
             />
           ) : (
             <div className="w-12 h-12 rounded-full bg-ig-hover flex items-center justify-center">
-              <span className="text-sm font-bold text-white">
-                {`${SelectedUser?.name[0]}${SelectedUser?.name.slice(-1)}`.toUpperCase()}
-              </span>
+              <UserRound />
             </div>
           )}
           <div className="flex flex-col">

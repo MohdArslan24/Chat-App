@@ -1,7 +1,7 @@
 import React from "react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-
+import { UserRound } from 'lucide-react';
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -22,13 +22,11 @@ export default function MessageBubble({ messageBody, showAvatar }) {
       )}
     >
       {!isSent && (
-        <div className="w-7 h-7 mr-2 shrink-0 flex items-end">
+        <div className="w-7 h-7 mr-2 shrink-0 flex  items-end">
           {showAvatar ? (
-            <img
-              src={messageBody.senderAvatar}
-              alt="Avatar"
-              className="w-7 h-7 rounded-full object-cover"
-            />
+        
+            <UserRound />
+         
           ) : (
             <div className="w-7 h-7" /> // Placeholder for alignment
           )}
@@ -43,7 +41,7 @@ export default function MessageBubble({ messageBody, showAvatar }) {
       >
         {messageBody.image ? (
           <img
-            src={message.image}
+            src={messageBody.image}
             alt="Message image"
             className="w-full rounded-[22px] object-cover mb-2"
           />
@@ -62,11 +60,9 @@ export default function MessageBubble({ messageBody, showAvatar }) {
           </div>
         )}
 
-        {messageBody.formattedTime && (
-          <span className="text-[11px] text-gray-300 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-            {messageBody.formattedTime}
-          </span>
-        )}
+        <span className="text-[11px] text-gray-300 mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          {formattedTime}
+        </span>
       </div>
     </div>
   );

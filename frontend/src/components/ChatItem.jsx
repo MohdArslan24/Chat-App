@@ -3,7 +3,7 @@ import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { setSelectedUser } from "../store/user/userSlice";
 import { useDispatch, useSelector } from "react-redux"
-
+import { UserRound } from 'lucide-react';
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -33,9 +33,7 @@ export default function ChatItem({ chat }) {
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-ig-hover flex items-center justify-center">
-            <span className="text-sm font-bold text-white">
-              {`${chat?.name[0]}${chat?.name.slice(-1)}`.toUpperCase()}
-            </span>
+            <UserRound />
           </div>
         )}
         {onlineUsers?.includes(chat._id) && <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-ig-black rounded-full" />}
