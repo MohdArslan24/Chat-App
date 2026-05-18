@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getOtherUsers } from "../store/user/userThunk";
-import {initializeSocket} from '../store/socket/socketSlice'
+import {initializeSocket, setOnlineUsers} from '../store/socket/socketSlice'
+import {setNewMessage} from "../store/chat/chatSlice"
 
 
 //Components
@@ -13,16 +14,33 @@ export default function Home() {
   const chats = useSelector((state) => state.chat.chats);
   const { currentUser, isAuthenticated } = useSelector((state) => state.auth);
   const {SelectedUser} = useSelector(state => state.user);
-
+  const {socket} = useSelector(state => state.socket);
 
    useEffect(() => {
     dispatch(getOtherUsers());
   }, []);
 
-  useEffect(() => {
+
+   useEffect(() => {
     if(!isAuthenticated) return;
-    dispatch(initializeSocket());
+    dispatch(initializeSocket(currentUser?._id));
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if(!socket) return;
+    socket.on("onlineUsers", (onlineUsers) => {
+      dispatch(setOnlineUsers(onlineUsers));
+    })
+
+    socket.on("newMessage", (newMessage) => {
+      dispatch(setNewMessage(newMessage))
+    })
+    
+    return () => {
+      socket.close();
+    }
+
+  }, [socket]);
 
  
 

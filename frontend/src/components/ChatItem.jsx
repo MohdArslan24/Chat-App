@@ -2,7 +2,7 @@ import React from "react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { setSelectedUser } from "../store/user/userSlice";
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 
 function cn(...inputs) {
   return twMerge(clsx(inputs));
@@ -11,6 +11,8 @@ function cn(...inputs) {
 export default function ChatItem({ chat }) {
 
   const dispatch = useDispatch();
+
+    const {onlineUsers} = useSelector(state => state.socket);
 
 
   return (
@@ -39,7 +41,8 @@ export default function ChatItem({ chat }) {
         {/* {chat.isOnline && (
           <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-ig-black rounded-full" />
         )} */}
-        <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-ig-black rounded-full" />
+        {onlineUsers?.includes(chat._id) && <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-ig-black rounded-full" />}
+        
       </div>
 
       <div className="ml-4 flex-1 overflow-hidden">

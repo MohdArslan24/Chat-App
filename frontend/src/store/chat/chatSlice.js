@@ -15,25 +15,12 @@ const chatSlice = createSlice({
     clearMessages: (state, action) => {
       state.messages = [];
     },
-    addMessage: (state, action) => {
-      const { receiverId, senderId } = action.payload;
-      // We index messages by the "other person's ID".
-      // If we are sender, index by receiverId. If we are receiver, index by senderId.
-      const otherPersonId = state.activeChatId; // Simplification for current view
-      if (!state.messages[otherPersonId]) {
-        state.messages[otherPersonId] = [];
-      }
-      state.messages[otherPersonId].push(action.payload);
-
-      // Update last message in chat list
-      const chat = state.chats.find((c) =>
-        c.participants.some((p) => p._id === otherPersonId),
-      );
-      if (chat) {
-        chat.lastMessage = action.payload.text || "Image";
-        chat.updatedAt = new Date().toISOString();
-      }
-    },
+    
+    setNewMessage: (state, action) => {
+      const newMessage = action.payload;
+      const oldMessages = state.messages ?? [];
+      state.messages = [...oldMessages, newMessage];
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -52,5 +39,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setActiveChatId, addMessage, clearMessages } = chatSlice.actions;
+export const { setActiveChatId, setNewMessage, clearMessages } = chatSlice.actions;
 export default chatSlice.reducer;

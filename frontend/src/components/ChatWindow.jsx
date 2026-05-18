@@ -10,7 +10,6 @@ import {
   Send,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { useSocket } from "../hooks/useSocket";
 import api from "../utils/axios";
 import MessageBubble from "./MessageBubble";
 import MessageContainer from "./MessageContainer";
@@ -26,7 +25,6 @@ export default function ChatWindow() {
   const fileInputRef = useRef(null);
 
   const dispatch = useDispatch();
-  const socket = useSocket();
   const { currentUser } = useSelector((state) => state.auth);
   const { SelectedUser } = useSelector((state) => state.user);
   const { messages } = useSelector((state) => state.chat);

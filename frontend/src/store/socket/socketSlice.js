@@ -3,6 +3,7 @@ import io from "socket.io-client";
 
 const initialState = {
   socket: null,
+  onlineUsers: null
 };
 
 const socketSlice = createSlice({
@@ -10,12 +11,18 @@ const socketSlice = createSlice({
   initialState,
   reducers: {
     initializeSocket: (state, action) => {
-      const socket = io(import.meta.env.VITE_SERVER_ORIGIN);
-      console.log("Socket initialized:", socket);
+      const socket = io(import.meta.env.VITE_SERVER_ORIGIN, {
+        query: {
+          userId: action.payload, // Pass the user ID as a query parameter
+        }
+      });
       state.socket = socket;
     },
+      setOnlineUsers: (state, action) => {
+        state.onlineUsers = action.payload;
+      }
   },
 });
 
-export const { initializeSocket } = socketSlice.actions;
+export const { initializeSocket, setOnlineUsers } = socketSlice.actions;
 export default socketSlice.reducer;

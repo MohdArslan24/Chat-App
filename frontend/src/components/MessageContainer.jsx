@@ -8,22 +8,17 @@ import MessageBubble from "./MessageBubble";
 
 function MessageContainer() {
   const messagesEndRef = useRef(null);
+  const containerRef = useRef(null);
   const fileInputRef = useRef(null);
   const [uploading, setUploading] = useState(false);
   
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.auth);
   const { SelectedUser } = useSelector((state) => state.user);
-  const { messages } = useSelector((state) => state.chat);
-
-  const scrollToBottom = () => {
-    messages.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  
+  const { messages } = useSelector((state) => state.chat);  
 
   useEffect(() => {
-    scrollToBottom();
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   return (

@@ -13,6 +13,13 @@ import socketReducer from './socket/socketSlice';
     user: userReducer,
     socket: socketReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore the specific state action path where the socket lives
+        ignoredPaths: ['socket.socket'],
+      },
+    }),
 });
 
 export default store;

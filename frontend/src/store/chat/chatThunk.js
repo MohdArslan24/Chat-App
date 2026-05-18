@@ -7,7 +7,6 @@ export const sendMessage = createAsyncThunk(
   "chat/sendMessage",
   async ({ receiverId, message }, { rejectWithValue }) => {
     try {
-        console.log("Sending message to receiverId:", receiverId, "with message:", message);
       if (!receiverId || !message) {
         return rejectWithValue("Receiver ID and message are required");
       }

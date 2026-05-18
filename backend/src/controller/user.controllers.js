@@ -17,8 +17,10 @@ const getCurrentUser = async (req, res) => {
 const getOtherUsers = async (req, res) => {
     try {
         const otherUsers = await User.find({
-            _id: {$ne: req.user._id}
+            _id: {$ne: req.user.id}
         })
+
+        console.log(otherUsers)
 
         if(!otherUsers) {
             return res.send({

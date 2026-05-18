@@ -1,32 +1,45 @@
-const {Server} = require('socket.io');
-const http = require('http');
-const cors = require('cors')
+const { Server } = require("socket.io");
 
-const app = require("../app")
-const server = http.createServer(app);
+let io;
+const connectedUsers = {};
 
-
-const io = new Server(server, {
+const initSocket = (server) => {
+  io = new Server(server, {
     cors: {
-        origin: process.env.CLIENT_URL,
-        methods: ["GET", "POST"],
-        credentials: true
+      origin: process.env.CLIENT_URL,
+      methods: ["GET", "POST"],
+      credentials: true,
+    },
+  });
+
+  io.on("connection", (socket) => {
+    const userId = socket.handshake.query.userId;
+    if(!userId) {
+      return;
     }
-})
 
-io.on('connection', (socket) => {
-    console.log('a user connected');
-    socket.on('disconnect', () => {
-        console.log('user disconnected');
+    connectedUsers[userId] = socket.id;
+    io.emit("onlineUsers", Object.keys(connectedUsers));
+    console.log(Object.keys(connectedUsers));
+
+    socket.on("disconnect", () => {
+      delete connectedUsers[userId];
+      io.emit("onlineUsers", Object.keys(connectedUsers));
+      console.log("user disconnected");
     });
-    socket.on('chat message', (msg) => {
-        console.log('message: ' + msg);
-        io.emit('chat message', msg);
+    socket.on("chat message", (msg) => {
+      console.log("message: " + msg);
+      io.emit("chat message", msg);
     });
-});
+  });
+};
 
+const getUserId = (userId) => {
+  return connectedUsers[userId];
+}
 
-
-
-
-module.exports = server
+module.exports = {
+    initSocket,
+    getUserId,
+    getIO: () => io
+};

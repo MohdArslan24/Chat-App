@@ -1,6 +1,7 @@
 const Message = require("../models/message.model");
 const Conversation = require("../models/conversation.model");
 const User = require("../models/user.model");
+const { getIO, getUserId } = require("../socket/socket");
 
 // Send a message
 const sendMessage = async (req, res) => {
@@ -72,6 +73,8 @@ const sendMessage = async (req, res) => {
       conversation.lastMessageTime = newMessage.createdAt;
       await conversation.save();
     }
+    const receiverSocketId = getUserId(receiverId);
+    getIO().to(receiverSocketId).emit("newMessage", newMessage);
 
     return res.status(201).send({
       success: true,
