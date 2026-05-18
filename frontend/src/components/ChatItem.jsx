@@ -38,9 +38,6 @@ export default function ChatItem({ chat }) {
             </span>
           </div>
         )}
-        {/* {chat.isOnline && (
-          <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-ig-black rounded-full" />
-        )} */}
         {onlineUsers?.includes(chat._id) && <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-ig-black rounded-full" />}
         
       </div>
