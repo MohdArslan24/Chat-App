@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronDown, Edit, Search } from "lucide-react";
+import { ChevronDown, Edit, Search, X } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import api from "../utils/axios";
 import ChatItem from "./ChatItem";
@@ -9,8 +9,8 @@ import { setSelectedUser } from "../store/user/userSlice";
 export default function Sidebar() {
   const { currentUser } = useSelector((state) => state.auth);
   const { otherUsers } = useSelector((state) => state.user);
-  const [users, setUsers] = useState([]);
-  const [search, setSearch] = useState("");
+  const [searchUsers, setSearchUsers] = useState([]);
+  const [searchValue, setSearchValue] = useState("");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -18,12 +18,16 @@ export default function Sidebar() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (search.trim()) {
-      api.get(`/users?search=${search}`).then((res) => setUsers(res.data));
+    if (searchValue) {
+      setSearchUsers(
+        otherUsers.filter((user) =>
+          user.name.toLowerCase().includes(searchValue),
+        ),
+      );
     } else {
-      setUsers([]);
+      setSearchUsers([]);
     }
-  }, [search]);
+  }, [searchValue]);
 
   return (
     <div className="w-full md:w-[30%] lg:w-[350px] h-full border-r border-ig-border flex flex-col bg-ig-black flex-shrink-0">
@@ -48,11 +52,14 @@ export default function Sidebar() {
           </div>
           <input
             type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             className="w-full bg-ig-dark-gray text-white text-sm rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-ig-border placeholder-ig-text-gray transition-shadow"
             placeholder="Search users..."
           />
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={() => setSearchValue('')}>
+            <X className="w-4 h-4 text-ig-text-gray" />
+          </div>
         </div>
       </div>
 
@@ -66,11 +73,11 @@ export default function Sidebar() {
         </div>
 
         <div className="mt-2">
-          {search ? otherUsers.map((u) => (
+          {searchValue
+            ? searchUsers.map((u) => (
                 <ChatItem
                   key={u._id}
                   chat={{ ...u, lastMessage: "Start a chat" }}
-                  isActive={activeChatId === u._id}
                   onClick={(selectedChat) => {
                     dispatch(setSelectedUser(selectedChat));
                     dispatch(setActiveChatId(selectedChat._id));
