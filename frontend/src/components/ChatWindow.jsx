@@ -8,7 +8,7 @@ import {
   Image as ImageIcon,
   Heart,
   Send,
-  UserRound
+  UserRound,
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
@@ -28,7 +28,9 @@ export default function ChatWindow() {
   const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.auth);
   const { SelectedUser } = useSelector((state) => state.user);
-  const { messages } = useSelector((state) => state.chat);
+  const { messages, typingStatus } = useSelector((state) => state.chat);
+  const { socket } = useSelector((state) => state.socket);
+  
 
   useEffect(() => {
     dispatch(clearMessages());
@@ -41,7 +43,6 @@ export default function ChatWindow() {
     if (gM.meta.requestStatus === "fulfilled") {
       setLoading(false);
     }
-  
   };
   if (!messages) {
     return (
@@ -62,16 +63,6 @@ export default function ChatWindow() {
     );
   }
 
-  const handleSend = (e) => {
-    e.preventDefault();
-    if (newMessage.trim() && socket) {
-      socket.emit("send_message", {
-        receiverId: chat._id,
-        text: newMessage,
-      });
-      setNewMessage("");
-    }
-  };
 
   const handleSendMsg = (e) => {
     e.preventDefault();
@@ -113,10 +104,34 @@ export default function ChatWindow() {
     }
   };
 
+  const typingTimeoutRef = useRef(null);
+  const isTypingRef = useRef(false);
+
   const handleTyping = (e) => {
     setNewMessage(e.target.value);
-    // You can emit typing events here if desired
-    // socket.emit('typing', chat._id);
+    // emit typing only first time
+    
+    if (!isTypingRef.current) {
+      socket.emit("typing", {
+        senderId: currentUser._id,
+        receiverId: SelectedUser._id,
+      });
+
+      isTypingRef.current = true;
+    }
+
+    // clear old timeout
+    clearTimeout(typingTimeoutRef.current);
+
+    // start new timeout
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("stopTyping", {
+        senderId: currentUser._id,
+        receiverId: SelectedUser._id,
+      });
+
+      isTypingRef.current = false;
+    }, 1000);
   };
 
   return (
@@ -150,6 +165,20 @@ export default function ChatWindow() {
         </div>
       </div>
       {loading ? <Loader /> : <MessageContainer />}
+
+      {/* Typing Indicator */}
+      {typingStatus.isTyping && (
+        <div className="px-4 py-2 bg-ig-black">
+          <div className="flex items-center gap-2">
+            <span className="text-ig-text-gray text-sm">{SelectedUser?.name} is typing</span>
+            <div className="flex gap-1">
+              <div className="w-2 h-2 bg-ig-text-gray rounded-full animate-bounce"></div>
+              <div className="w-2 h-2 bg-ig-text-gray rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+              <div className="w-2 h-2 bg-ig-text-gray rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Input Area */}
       <div className="p-4 bg-ig-black shrink-0">

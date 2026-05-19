@@ -6,6 +6,10 @@ const initialState = {
   chats: null, // List of conversations
   messages: [], // Mapping receiverId to array of messages
   loading: false,
+  typingStatus: {
+    isTyping: false,
+    senderId: null
+  }, // Mapping receiverId to boolean
 };
 
 const chatSlice = createSlice({
@@ -20,6 +24,9 @@ const chatSlice = createSlice({
       const newMessage = action.payload;
       const oldMessages = state.messages ?? [];
       state.messages = [...oldMessages, newMessage];
+    },
+    setTypingStatus: (state, action) => {
+      state.typingStatus = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -39,5 +46,5 @@ const chatSlice = createSlice({
   },
 });
 
-export const { setActiveChatId, setNewMessage, clearMessages } = chatSlice.actions;
+export const { setActiveChatId, setNewMessage, clearMessages, setTypingStatus } = chatSlice.actions;
 export default chatSlice.reducer;

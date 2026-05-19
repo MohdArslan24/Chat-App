@@ -14,32 +14,44 @@ const initSocket = (server) => {
 
   io.on("connection", (socket) => {
     const userId = socket.handshake.query.userId;
-    if(!userId) {
+    if (!userId) {
       return;
     }
 
     connectedUsers[userId] = socket.id;
     io.emit("onlineUsers", Object.keys(connectedUsers));
-    console.log(Object.keys(connectedUsers));
+
+    socket.on("typing", ({ senderId, receiverId }) => {
+      const receiverSocketId = getUserId(receiverId);
+      
+      if (receiverSocketId) {
+        
+        io.to(receiverSocketId).emit("typing", senderId);
+      }
+    });
+
+    socket.on("stopTyping", ({ senderId, receiverId }) => {
+      const receiverSocketId = getUserId(receiverId);
+      if (receiverSocketId) {
+        
+        io.to(receiverSocketId).emit("stopTyping", senderId);
+      }
+    });
 
     socket.on("disconnect", () => {
       delete connectedUsers[userId];
       io.emit("onlineUsers", Object.keys(connectedUsers));
       console.log("user disconnected");
     });
-    socket.on("chat message", (msg) => {
-      console.log("message: " + msg);
-      io.emit("chat message", msg);
-    });
   });
 };
 
 const getUserId = (userId) => {
   return connectedUsers[userId];
-}
+};
 
 module.exports = {
-    initSocket,
-    getUserId,
-    getIO: () => io
+  initSocket,
+  getUserId,
+  getIO: () => io,
 };

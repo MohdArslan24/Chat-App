@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { getOtherUsers } from "../store/user/userThunk";
 import {initializeSocket, setOnlineUsers} from '../store/socket/socketSlice'
-import {setNewMessage} from "../store/chat/chatSlice"
+import {setNewMessage, setTypingStatus} from "../store/chat/chatSlice"
 
 
 //Components
@@ -28,6 +28,7 @@ export default function Home() {
 
   useEffect(() => {
     if(!socket) return;
+    
     socket.on("onlineUsers", (onlineUsers) => {
       dispatch(setOnlineUsers(onlineUsers));
     })
@@ -35,17 +36,29 @@ export default function Home() {
     socket.on("newMessage", (newMessage) => {
       dispatch(setNewMessage(newMessage))
     })
+
+    socket.on("typing", (senderId) => {
+      dispatch(setTypingStatus({isTyping: true, senderId}))
+    })
+
+    socket.on("stopTyping", (senderId) => {
+      dispatch(setTypingStatus({isTyping: false, senderId}))
+    })
     
     return () => {
+      socket.off("onlineUsers");
+      socket.off("newMessage");
+      socket.off("typing");
+      socket.off("stopTyping");
       socket.close();
     }
 
-  }, [socket]);
+  }, [socket, dispatch]);
 
  
 
   return (
-    <div className="flex h-screen w-full bg-ig-black overflow-hidden">
+    <div className="flex h-screen w-full overflow-hidden">
       {/* Sidebar - hidden on mobile when chat is active */}
       <div className={`w-full md:w-[350px] h-full transition-all duration-300 ${SelectedUser ? 'hidden md:flex' : 'flex'} flex-col`}>
         <Sidebar />

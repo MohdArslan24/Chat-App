@@ -20,8 +20,6 @@ const getOtherUsers = async (req, res) => {
             _id: {$ne: req.user.id}
         })
 
-        console.log(otherUsers)
-
         if(!otherUsers) {
             return res.send({
                 success: false,
