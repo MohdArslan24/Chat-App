@@ -11,14 +11,13 @@ import ChatWindow from '../components/ChatWindow';
 
 export default function Home() {
   const dispatch = useDispatch();
-  const chats = useSelector((state) => state.chat.chats);
+
+
+  const {chats } = useSelector((state) => state.chat);
   const { currentUser, isAuthenticated } = useSelector((state) => state.auth);
   const {SelectedUser} = useSelector(state => state.user);
   const {socket} = useSelector(state => state.socket);
 
-   useEffect(() => {
-    dispatch(getOtherUsers());
-  }, []);
 
 
    useEffect(() => {

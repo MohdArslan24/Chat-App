@@ -4,6 +4,7 @@ import { twMerge } from "tailwind-merge";
 import { setSelectedUser } from "../store/user/userSlice";
 import { useDispatch, useSelector } from "react-redux"
 import { UserRound } from 'lucide-react';
+
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
@@ -12,7 +13,7 @@ export default function ChatItem({ chat }) {
 
   const dispatch = useDispatch();
 
-    const {onlineUsers} = useSelector(state => state.socket);
+  const {onlineUsers} = useSelector(state => state.socket);
 
 
   return (

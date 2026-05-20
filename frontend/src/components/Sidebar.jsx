@@ -7,11 +7,11 @@ import { getOtherUsers } from "../store/user/userThunk";
 import { setSelectedUser } from "../store/user/userSlice";
 
 export default function Sidebar() {
+  const dispatch = useDispatch();
   const { currentUser } = useSelector((state) => state.auth);
   const { otherUsers } = useSelector((state) => state.user);
   const [searchUsers, setSearchUsers] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(getOtherUsers());
@@ -31,6 +31,7 @@ export default function Sidebar() {
 
   return (
     <div className="w-full md:w-[30%] lg:w-[350px] h-full border-r border-ig-border flex flex-col bg-ig-black flex-shrink-0">
+
       {/* Header */}
       <div className="h-[75px] px-5 flex items-center justify-between border-b border-ig-border shrink-0">
         <div className="flex items-center gap-1 cursor-pointer">
@@ -57,7 +58,10 @@ export default function Sidebar() {
             className="w-full bg-ig-dark-gray text-white text-sm rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-1 focus:ring-ig-border placeholder-ig-text-gray transition-shadow"
             placeholder="Search users..."
           />
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer" onClick={() => setSearchValue('')}>
+          <div
+            className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer"
+            onClick={() => setSearchValue("")}
+          >
             <X className="w-4 h-4 text-ig-text-gray" />
           </div>
         </div>
@@ -73,8 +77,8 @@ export default function Sidebar() {
         </div>
 
         <div className="mt-2">
-          {searchValue
-            ? searchUsers.map((u) => (
+          {searchValue ? 
+            searchUsers.map((u) => (
                 <ChatItem
                   key={u._id}
                   chat={{ ...u, lastMessage: "Start a chat" }}

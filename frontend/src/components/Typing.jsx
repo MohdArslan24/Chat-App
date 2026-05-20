@@ -1,10 +1,16 @@
 import React from 'react'
+import { useDispatch, useSelector } from "react-redux";
 
 export default function Typing() {
+
+  const { typingStatus } = useSelector((state) => state.chat);
+  const { SelectedUser } = useSelector((state) => state.user);
+
+
   return (
     <div>
       {/* Typing Indicator */}
-      {typingStatus && (
+      {typingStatus.isTyping && (
         <div className="px-4 py-2 bg-ig-black">
           <div className="flex items-center gap-2">
             <span className="text-ig-text-gray text-sm">{SelectedUser?.name} is typing</span>
