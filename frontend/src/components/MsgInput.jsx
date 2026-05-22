@@ -92,7 +92,7 @@ function MsgInput() {
       });
 
       isTypingRef.current = false;
-    }, 1000);
+    }, 1500);
   };
 
   return (

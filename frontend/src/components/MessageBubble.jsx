@@ -1,18 +1,19 @@
 import React from "react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { UserRound } from 'lucide-react';
+import { UserRound } from "lucide-react";
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
 export default function MessageBubble({ messageBody, showAvatar }) {
+  
   const isSent = messageBody.senderId === "me";
 
-  const formattedTime = new Date(messageBody.createdAt).toLocaleTimeString([],{
+  const formattedTime = new Date(messageBody.createdAt).toLocaleTimeString([], {
     hour: "2-digit",
-    minute: "2-digit"
-  })
+    minute: "2-digit",
+  });
 
   return (
     <div
@@ -24,9 +25,7 @@ export default function MessageBubble({ messageBody, showAvatar }) {
       {!isSent && (
         <div className="w-7 h-7 mr-2 shrink-0 flex  items-end">
           {showAvatar ? (
-        
             <UserRound />
-         
           ) : (
             <div className="w-7 h-7" /> // Placeholder for alignment
           )}
@@ -49,14 +48,13 @@ export default function MessageBubble({ messageBody, showAvatar }) {
         {messageBody.message && (
           <div
             className={cn(
-              "px-3.5 py-2.5 text-[15px] leading-[20px] rounded-[22px]",
+              "px-3.5 py-2.5 text-[15px] leading-[20px] rounded-[22px] flex justify-center items-center",
               isSent
                 ? "bg-gradient-to-r from-violet-800 to-fuchsia-800 text-white font-medium"
                 : "bg-ig-message-received text-white border border-ig-border",
             )}
           >
             <span>{messageBody.message}</span>
-
           </div>
         )}
 
