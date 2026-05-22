@@ -42,9 +42,17 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      toast.success("Logged out successfully!");
+      const response = await axiosInstance.post("/auth/logout");
+
+      if (response.data.success) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        toast.success("Logged out successfully!");
+        return;
+      } else {
+        toast.error(response.data.message);
+        return rejectWithValue(response.data);
+      }
       return;
     } catch (error) {
       toast.error("Failed to log out!");
@@ -79,4 +87,3 @@ export const verifyToken = createAsyncThunk(
     }
   },
 );
-

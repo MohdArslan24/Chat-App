@@ -5,9 +5,11 @@ import api from "../utils/axios";
 import ChatItem from "./ChatItem";
 import { getOtherUsers } from "../store/user/userThunk";
 import { setSelectedUser } from "../store/user/userSlice";
+import { useNavigate } from "react-router-dom";
 
 export default function Sidebar() {
   const dispatch = useDispatch();
+  const navigate = useNavigate()
   const { currentUser } = useSelector((state) => state.auth);
   const { otherUsers } = useSelector((state) => state.user);
   const [searchUsers, setSearchUsers] = useState([]);
@@ -34,11 +36,11 @@ export default function Sidebar() {
 
       {/* Header */}
       <div className="h-[75px] px-5 flex items-center justify-between border-b border-ig-border shrink-0">
-        <div className="flex items-center gap-1 cursor-pointer">
+        <div className="flex items-center gap-1 cursor-pointer" onClick={() => navigate("/profile")} >
           <span className="font-bold text-xl text-white">
             {currentUser?.name || "_user"}
           </span>
-          <ChevronDown className="w-5 h-5 text-white" />
+          
         </div>
         <button className="text-white hover:opacity-70 transition-opacity">
           <Edit className="w-6 h-6" />
