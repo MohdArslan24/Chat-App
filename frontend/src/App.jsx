@@ -17,6 +17,11 @@ function App() {
   const { isAuthenticated, currentUser } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    // Verify token on app initialization
+    dispatch(verifyToken());
+  }, [dispatch]);
+
   return (
     <>
       <Toaster position="top-center" reverseOrder={false} />

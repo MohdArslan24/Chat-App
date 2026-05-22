@@ -62,11 +62,8 @@ export const verifyToken = createAsyncThunk(
         return rejectWithValue("No token found");
       }
 
-      // Verify token with backend
-      const res = await axios.get("http://localhost:5000/api/auth/protected", {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
+      // Verify token with backend using axiosInstance
+      const res = await axiosInstance.get("/auth/protected");
 
       if (res.data.success) {
         return res.data.user;
@@ -82,3 +79,4 @@ export const verifyToken = createAsyncThunk(
     }
   },
 );
+
