@@ -9,7 +9,7 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-const { isAuthenticated, currentUser } = useSelector((state) => state.auth);
+  const { isAuthenticated, currentUser } = useSelector((state) => state.auth);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -19,7 +19,7 @@ const { isAuthenticated, currentUser } = useSelector((state) => state.auth);
     e.preventDefault();
     const result = await dispatch(loginUser(formData));
     if (result.type === "auth/loginUser/fulfilled") {
-      navigate('/');
+      navigate("/");
     }
   };
 

@@ -11,6 +11,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import { logoutUser } from '../store/auth/authThunk';
+import { updateUserProfile } from "../store/user/userThunk";
 
 function Profile() {
   const dispatch = useDispatch();
@@ -31,10 +32,7 @@ function Profile() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleImageUpload = (e) => {
@@ -55,6 +53,7 @@ function Profile() {
   const handleSaveProfile = () => {
     // TODO: Implement API call to update user profile
     console.log('Saving profile:', formData);
+    dispatch(updateUserProfile(formData))
     setIsEditing(false);
   };
 
