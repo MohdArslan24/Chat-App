@@ -72,8 +72,9 @@ export const verifyToken = createAsyncThunk(
 
       // Verify token with backend using axiosInstance
       const res = await axiosInstance.get("/auth/protected");
-
+      
       if (res.data.success) {
+        console.log(res.data);
         return res.data.user;
       }
       return rejectWithValue("Invalid token");

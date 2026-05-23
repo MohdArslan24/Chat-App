@@ -21,7 +21,7 @@ function App() {
   useEffect(() => {
     // Verify token on app initialization
     dispatch(verifyToken());
-  }, [dispatch]);
+  }, []);
 
   return (
     <>

@@ -18,10 +18,12 @@ const signup = async (req, res) => {
     });
 
     if (userExists)
-      return res.send({
-        success: false,
-        message: "User with this email already exists.",
-      }).status(409);
+      return res
+        .send({
+          success: false,
+          message: "User with this email already exists.",
+        })
+        .status(409);
     if (password < 6)
       return res.status(422).send({
         success: false,
@@ -36,17 +38,20 @@ const signup = async (req, res) => {
 
     const token = createToken(user);
 
-    return res.status(201).cookie("token", token, {
-      httpOnly: true,
-      sameSite: 'Strict',
-      secure: false
-    }).send({
-      success: true,
-      message: "Account created successfully",
-      username: user.name,
-      email: user.email,
-      token: token,
-    });
+    return res
+      .status(201)
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: false,
+      })
+      .send({
+        success: true,
+        message: "Account created successfully",
+        username: user.name,
+        email: user.email,
+        token: token,
+      });
   } catch (error) {
     return res.send({
       success: false,
@@ -70,31 +75,38 @@ const login = async (req, res) => {
       email,
     });
     if (!userExists)
-      return res.send({
-        success: false,
-        message: "User not exists.",
-      }).status(409);
+      return res
+        .send({
+          success: false,
+          message: "User not exists.",
+        })
+        .status(409);
 
     const isMatch = await userExists.comparePassword(password);
 
     if (!isMatch)
-      return res.send({
-        success: false,
-        message: "Invalid email or password",
-      }).status(401);
+      return res
+        .send({
+          success: false,
+          message: "Invalid email or password",
+        })
+        .status(401);
 
     const token = createToken(userExists);
 
-    return res.status(200).cookie("token", token, {
-      httpOnly: true,
-      sameSite: 'Strict',
-      secure: false
-    }).send({
-      success: true,
-      message: "User login successful",
-      userData: userExists,
-      token: token,
-    });
+    return res
+      .status(200)
+      .cookie("token", token, {
+        httpOnly: true,
+        sameSite: "Strict",
+        secure: false,
+      })
+      .send({
+        success: true,
+        message: "User login successful",
+        userData: userExists,
+        token: token,
+      });
   } catch (error) {
     return res.send({
       success: false,
@@ -104,23 +116,39 @@ const login = async (req, res) => {
 };
 
 //Logout Controller
-const logout = async (req, res) => {
-    try {
-        res.clearCookie("token")
-        return res.send({
-            success: true,
-            message: "User logout successfully"
-        })
-    } catch (error) {
-        return res.send({
-          success: false,
-          message: error.message,
+const verifiedUser = async (req, res) => {
+  try {
+    return res.send({
+      success: true,
+      message: "User verified",
+      user: req.user,
     });
-    }
-}
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    res.clearCookie("token");
+    return res.send({
+      success: true,
+      message: "User logout successfully",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 module.exports = {
   signup,
   login,
   logout,
+  verifiedUser,
 };
