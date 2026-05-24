@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, registerUser, logoutUser, verifyToken } from "./authThunk";
+import { loginUser, registerUser, logoutUser, verifyToken, deleteUserAccount, updateUserProfile } from "./authThunk";
 
 const initialState = {
   isAuthenticated: localStorage.getItem("token") ? true : false,
@@ -56,7 +56,20 @@ const authSlice = createSlice({
       .addCase(verifyToken.rejected, (state) => {
         state.isAuthenticated = false;
         state.currentUser = null;
-      });
+      })
+      .addCase(deleteUserAccount.fulfilled, (state, action) => {
+        state.isAuthenticated = false;
+        state.currentUser = null;
+      })
+      .addCase(deleteUserAccount.rejected, (state, action) => {
+        state.error = action.payload?.message || "Failed to delete account";
+      })
+      .addCase(updateUserProfile.fulfilled, (state, action) => {
+          state.currentUser = action.payload;
+        })
+        .addCase(updateUserProfile.rejected, (state, action) => {
+          state.error = action.payload?.message || "Failed to fetch other users";
+        });
   },
 });
 

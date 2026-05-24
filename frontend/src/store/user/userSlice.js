@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getOtherUsers, updateUserProfile } from "./userThunk";
+import { getOtherUsers } from "./userThunk";
 
 const initialState = {
   user: null,
@@ -21,12 +21,6 @@ const userSlice = createSlice({
           state.otherUsers = action.payload;
         })
         .addCase(getOtherUsers.rejected, (state, action) => {
-          state.error = action.payload?.message || "Failed to fetch other users";
-        })
-        .addCase(updateUserProfile.fulfilled, (state, action) => {
-          console.log(action.payload);
-        })
-        .addCase(updateUserProfile.rejected, (state, action) => {
           state.error = action.payload?.message || "Failed to fetch other users";
         });
   },

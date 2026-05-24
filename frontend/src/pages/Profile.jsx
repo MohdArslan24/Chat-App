@@ -10,8 +10,8 @@ import {
   X,
   UserRound,
 } from 'lucide-react';
-import { logoutUser } from '../store/auth/authThunk';
-import { updateUserProfile } from "../store/user/userThunk";
+import { logoutUser,deleteUserAccount, updateUserProfile } from '../store/auth/authThunk';
+
 
 function Profile() {
   const dispatch = useDispatch();
@@ -21,11 +21,18 @@ function Profile() {
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
 
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
     email: currentUser?.email || '',
     profileImage: currentUser?.profileImage || '',
+  });
+
+  const [passwordFormData, setPasswordFormData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
   });
 
   const [imagePreview, setImagePreview] = useState(currentUser?.profileImage || '');
@@ -52,7 +59,6 @@ function Profile() {
 
   const handleSaveProfile = () => {
     // TODO: Implement API call to update user profile
-    console.log('Saving profile:', formData);
     dispatch(updateUserProfile(formData))
     setIsEditing(false);
   };
@@ -75,11 +81,59 @@ function Profile() {
 
   const handleDeleteAccount = () => {
     // TODO: Implement API call to delete user account
-    console.log('Deleting account');
     // After deletion, logout and redirect
-    dispatch(logoutUser());
+    dispatch(deleteUserAccount());
     navigate('/login');
     setShowDeleteModal(false);
+  };
+
+  const handleChangePassword = () => {
+
+  }
+
+  const handlePasswordInputChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handlePasswordSubmit = () => {
+    if (!passwordFormData.currentPassword || !passwordFormData.newPassword || !passwordFormData.confirmPassword) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    if (passwordFormData.newPassword !== passwordFormData.confirmPassword) {
+      alert('New passwords do not match');
+      return;
+    }
+
+    if (passwordFormData.newPassword.length < 6) {
+      alert('Password must be at least 6 characters');
+      return;
+    }
+
+    // TODO: Call API to change password
+    console.log('Changing password:', passwordFormData);
+    
+    // Reset form and close modal
+    setPasswordFormData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+    setShowPasswordModal(false);
+  };
+
+  const handlePasswordCancel = () => {
+    setPasswordFormData({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    });
+    setShowPasswordModal(false);
   };
 
   return (
@@ -166,7 +220,7 @@ function Profile() {
             </div>
 
             {/* Member Since - Desktop only */}
-            <div className="hidden md:block space-y-2">
+            <div className="space-y-2">
               <label className="text-ig-text-gray text-xs md:text-sm font-medium">Member Since</label>
               <div className="w-full px-3 md:px-4 py-2 md:py-3 rounded-lg text-ig-text-gray text-sm bg-ig-hover border border-ig-border">
                 {currentUser?.createdAt
@@ -177,13 +231,13 @@ function Profile() {
           </div>
 
           {/* Action Buttons - Mobile Only */}
-          <div className="md:hidden space-y-2 md:space-y-3 pt-3 md:pt-4">
+          <div className="space-y-2 md:space-y-3 pt-3 md:pt-4">
             {isEditing ? (
               <>
                 {/* Save Button */}
                 <button
                   onClick={handleSaveProfile}
-                  className="w-full bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 mb-2 md:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
+                  className="w-full bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 mb-2 md:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 group text-sm cursor-pointer md:text-base"
                 >
                   <Save className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
                   Save Changes
@@ -192,7 +246,7 @@ function Profile() {
                 {/* Cancel Button */}
                 <button
                   onClick={handleCancel}
-                  className="w-full bg-ig-dark-gray hover:bg-ig-hover text-white font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
+                  className="w-full bg-ig-dark-gray hover:bg-ig-hover text-white font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors flex items-center justify-center gap-2 group text-sm cursor-pointer md:text-base"
                 >
                   <X className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
                   Cancel
@@ -203,13 +257,15 @@ function Profile() {
                 {/* Edit Profile Button */}
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="w-full bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 mb-3.5 md:py-3 rounded-lg transition-colors text-sm md:text-base"
+                  className="w-full bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 mb-3.5 md:py-3 rounded-lg transition-colors text-sm cursor-pointer md:text-base"
                 >
                   Edit Profile
                 </button>
 
                 {/* Change Password Button */}
-                <button className="w-full bg-ig-dark-gray hover:bg-ig-hover text-white font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors text-sm md:text-base">
+                <button 
+                  onClick={() => setShowPasswordModal(true)}
+                  className="w-full bg-ig-dark-gray hover:bg-ig-hover text-white font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors text-sm cursor-pointer md:text-base">
                   Change Password
                 </button>
               </>
@@ -217,11 +273,11 @@ function Profile() {
           </div>
 
           {/* Danger Zone - Mobile Only */}
-          <div className="md:hidden pt-3 md:pt-4 border-t border-ig-border space-y-2 md:space-y-3">
+          <div className="pt-3 md:pt-4 border-t border-ig-border space-y-2 md:space-y-3">
             {/* Logout Button */}
             <button
               onClick={() => setShowLogoutModal(true)}
-              className="w-full bg-ig-dark-gray hover:bg-ig-hover text-ig-blue font-semibold py-2 mb-4 md:py-3 rounded-lg border border-ig-border transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
+              className="w-full bg-ig-dark-gray hover:bg-ig-hover text-ig-blue font-semibold py-2 mb-4 md:py-3 rounded-lg border border-ig-border transition-colors flex items-center justify-center gap-2 group text-sm cursor-pointer md:text-base"
             >
               <LogOut className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
               Logout
@@ -230,7 +286,7 @@ function Profile() {
             {/* Delete Account Button */}
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 font-semibold py-2 md:py-3 rounded-lg border border-red-500/30 transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
+              className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 font-semibold py-2 md:py-3 rounded-lg border border-red-500/30 transition-colors flex items-center justify-center gap-2 group text-sm cursor-pointer md:text-base"
             >
               <Trash2 className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
               Delete Account
@@ -290,66 +346,7 @@ function Profile() {
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-2 md:space-y-3 pt-3 md:pt-4">
-            {isEditing ? (
-              <>
-                {/* Save Button */}
-                <button
-                  onClick={handleSaveProfile}
-                  className="w-full bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 md:py-3 rounded-lg transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
-                >
-                  <Save className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
-                  Save Changes
-                </button>
-
-                {/* Cancel Button */}
-                <button
-                  onClick={handleCancel}
-                  className="w-full bg-ig-dark-gray hover:bg-ig-hover text-white font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
-                >
-                  <X className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                {/* Edit Profile Button */}
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="w-full bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 md:py-3 rounded-lg transition-colors text-sm md:text-base"
-                >
-                  Edit Profile
-                </button>
-
-                {/* Change Password Button */}
-                <button className="w-full bg-ig-dark-gray hover:bg-ig-hover text-white font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors text-sm md:text-base">
-                  Change Password
-                </button>
-              </>
-            )}
-          </div>
-
-          {/* Danger Zone */}
-          <div className="pt-3 md:pt-4 border-t border-ig-border space-y-2 md:space-y-3">
-            {/* Logout Button */}
-            <button
-              onClick={() => setShowLogoutModal(true)}
-              className="w-full bg-ig-dark-gray hover:bg-ig-hover text-ig-blue font-semibold py-2 md:py-3 rounded-lg border border-ig-border transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
-            >
-              <LogOut className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
-              Logout
-            </button>
-
-            {/* Delete Account Button */}
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="w-full bg-red-500/10 hover:bg-red-500/20 text-red-500 font-semibold py-2 md:py-3 rounded-lg border border-red-500/30 transition-colors flex items-center justify-center gap-2 group text-sm md:text-base"
-            >
-              <Trash2 className="w-4 md:w-5 h-4 md:h-5 group-hover:scale-110 transition-transform" />
-              Delete Account
-            </button>
-          </div>
+        
         </div>
       </div>
 
@@ -401,6 +398,69 @@ function Profile() {
                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 md:py-2 rounded-lg transition-colors text-sm md:text-base"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Change Password Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-4">
+          <div className="bg-ig-dark-gray border border-ig-border rounded-2xl p-4 md:p-6 max-w-sm w-full space-y-4">
+            <h2 className="text-white text-lg font-semibold">Change Password</h2>
+            
+            {/* Current Password */}
+            <div className="space-y-2">
+              <label className="text-ig-text-gray text-sm font-medium">Current Password</label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={passwordFormData.currentPassword}
+                onChange={handlePasswordInputChange}
+                placeholder="Enter current password"
+                className="w-full px-4 py-2 rounded-lg bg-ig-hover border border-ig-border text-white text-sm focus:outline-none focus:border-ig-blue transition-all"
+              />
+            </div>
+
+            {/* New Password */}
+            <div className="space-y-2">
+              <label className="text-ig-text-gray text-sm font-medium">New Password</label>
+              <input
+                type="password"
+                name="newPassword"
+                value={passwordFormData.newPassword}
+                onChange={handlePasswordInputChange}
+                placeholder="Enter new password"
+                className="w-full px-4 py-2 rounded-lg bg-ig-hover border border-ig-border text-white text-sm focus:outline-none focus:border-ig-blue transition-all"
+              />
+            </div>
+
+            {/* Confirm Password */}
+            <div className="space-y-2">
+              <label className="text-ig-text-gray text-sm font-medium">Confirm Password</label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={passwordFormData.confirmPassword}
+                onChange={handlePasswordInputChange}
+                placeholder="Confirm new password"
+                className="w-full px-4 py-2 rounded-lg bg-ig-hover border border-ig-border text-white text-sm focus:outline-none focus:border-ig-blue transition-all"
+              />
+            </div>
+
+            <div className="flex gap-3 pt-4">
+              <button
+                onClick={handlePasswordCancel}
+                className="flex-1 bg-ig-hover hover:bg-ig-border text-white font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePasswordSubmit}
+                className="flex-1 bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Change Password
               </button>
             </div>
           </div>

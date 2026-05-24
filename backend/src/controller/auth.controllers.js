@@ -146,9 +146,36 @@ const logout = async (req, res) => {
   }
 };
 
+
+const deleteAccount = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.send({
+        success: false,
+        message: "User not found",
+      });
+    }
+    res.clearCookie("token");
+    return res.send({
+      success: true,
+      message: "User account deleted successfully",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   signup,
   login,
   logout,
   verifiedUser,
+  deleteAccount
 };

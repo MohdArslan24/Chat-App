@@ -53,7 +53,11 @@ const updateProfileDetails = async (req, res) => {
 
     // Check if email is already in use by another user
     if (email && email !== user.email) {
-      const existingUser = await User.findOne({ email });
+      const existingUser = await User.findOne({
+         email,
+        _id: { $ne: user.id }
+
+         });
       if (existingUser) {
         return res.send({
           success: false,

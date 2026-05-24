@@ -1,6 +1,6 @@
 const express = require("express")
 
-const {signup, login, logout, verifiedUser} = require("../controller/auth.controllers")
+const {signup, login, logout, verifiedUser,deleteAccount} = require("../controller/auth.controllers")
 const checkForAuthCookie = require("../middlewares/protect")
  
 
@@ -17,5 +17,8 @@ router.post("/logout", logout)
 
 // Protected Route - Returns current user
 router.get("/protected", checkForAuthCookie, verifiedUser)
+
+//Delete Account Route
+router.delete("/delete-account", checkForAuthCookie, deleteAccount)
 
 module.exports = router

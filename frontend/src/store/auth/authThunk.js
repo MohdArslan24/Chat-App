@@ -74,7 +74,6 @@ export const verifyToken = createAsyncThunk(
       const res = await axiosInstance.get("/auth/protected");
       
       if (res.data.success) {
-        console.log(res.data);
         return res.data.user;
       }
       return rejectWithValue("Invalid token");
@@ -85,6 +84,52 @@ export const verifyToken = createAsyncThunk(
       return rejectWithValue(
         err.response?.data?.message || "Token verification failed",
       );
+    }
+  },
+);
+
+export const updateUserProfile = createAsyncThunk(
+  "user/updateUserProfile",
+  async (userData, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch("/user/update-profile", userData);
+      if(response.data.success) {
+        toast.success("Profile updated successfully!");
+        return response.data.data;
+      }
+      else{
+        toast.error(response.data.message);
+        return response.data;
+      }
+        
+      
+    } catch (error) {
+      toast.error("something went wrong!");
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
+
+export const deleteUserAccount = createAsyncThunk(
+  "auth/deleteUserAccount",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.delete("/auth/delete-account");
+
+      if (response.data.success) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        toast.success("Account deleted successfully!");
+        return;
+      } else {
+        toast.error(response.data.message);
+        return rejectWithValue(response.data);
+      }
+      return;
+    } catch (error) {
+      toast.error("Failed to delete account!");
+      return rejectWithValue(error.response.data);
     }
   },
 );
