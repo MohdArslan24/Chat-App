@@ -27,7 +27,7 @@ function MessageContainer() {
       <div className="flex-1 overflow-y-auto p-5 pb-0 flex flex-col">
         <div className="flex flex-col mt-4">
           {messages.map((msg, index) => {
-            const isMe = msg.sender === currentUser?._id;
+            const isMe = msg.sender?.toString() === currentUser?._id?.toString();
             // Simplify showAvatar logic for brevity
             const showAvatar = !isMe;
 

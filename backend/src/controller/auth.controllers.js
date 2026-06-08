@@ -146,6 +146,43 @@ const logout = async (req, res) => {
   }
 };
 
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = req.user;
+    if (!currentPassword || !newPassword) {
+      return res.status(422).send({
+        success: false,
+        message: "Fill required fields.",
+      });
+    }
+    const isMatch = await user.comparePassword(currentPassword);
+
+    if (!isMatch)
+      return res
+        .send({
+          success: false,
+          message: "Current password is incorrect",
+        })
+        .status(401);
+    if (newPassword.length < 6)
+      return res.status(422).send({
+        success: false,
+        message: "New password must be atleast 6 characters.",
+      });
+    user.password = newPassword;
+    await user.save();
+    return res.send({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 const deleteAccount = async (req, res) => {
   try {
@@ -177,5 +214,5 @@ module.exports = {
   login,
   logout,
   verifiedUser,
-  deleteAccount
+  deleteAccount,
 };
