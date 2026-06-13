@@ -10,4 +10,5 @@ router.get('/other-users', checkForAuthCookie, getOtherUsers)
 
 router.patch('/update-profile', checkForAuthCookie, updateProfileDetails)
 
+
 module.exports = router
