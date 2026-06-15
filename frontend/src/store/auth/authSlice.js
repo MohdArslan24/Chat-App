@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { loginUser, registerUser, logoutUser, verifyToken, deleteUserAccount, updateUserProfile } from "./authThunk";
+import { loginUser, registerUser, logoutUser, verifyToken, deleteUserAccount, updateUserProfile, updateProfilePicture } from "./authThunk";
 
 const initialState = {
   isAuthenticated: localStorage.getItem("token") ? true : false,
@@ -69,7 +69,13 @@ const authSlice = createSlice({
         })
         .addCase(updateUserProfile.rejected, (state, action) => {
           state.error = action.payload?.message || "Failed to fetch other users";
-        });
+        })
+      .addCase(updateProfilePicture.fulfilled, (state, action) => {
+        state.currentUser = action.payload;
+      })
+      .addCase(updateProfilePicture.rejected, (state, action) => {
+        state.error = action.payload?.message || "Failed to update profile picture";
+      });
   },
 });
 

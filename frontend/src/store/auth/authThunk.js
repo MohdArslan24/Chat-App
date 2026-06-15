@@ -110,6 +110,33 @@ export const updateUserProfile = createAsyncThunk(
   },
 );
 
+export const updateProfilePicture = createAsyncThunk(
+  "user/updateProfilePicture",
+  async (profilePicture, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.patch("/user/update-profile-picture", profilePicture, {
+        headers: {
+          'Content-Type': undefined,
+        }
+      });
+      if(response.data.success) {
+        toast.success("Profile picture updated successfully!");
+        // Save updated user to localStorage
+        localStorage.setItem("user", JSON.stringify(response.data.data));
+        return response.data.data;
+      }
+      else{
+        toast.error(response.data.message);
+        console.error(response.data);
+        return response.data;
+      }
+    } catch (error) {
+      toast.error("something went wrong!");
+      return rejectWithValue(error.response.data);
+    }
+  },
+);
+
 
 export const deleteUserAccount = createAsyncThunk(
   "auth/deleteUserAccount",

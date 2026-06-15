@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const uploadToCloudinary = require("../services/uploadToCloudinary");
 
 const getCurrentUser = async (req, res) => {
   try {
@@ -54,10 +55,9 @@ const updateProfileDetails = async (req, res) => {
     // Check if email is already in use by another user
     if (email && email !== user.email) {
       const existingUser = await User.findOne({
-         email,
-        _id: { $ne: user.id }
-
-         });
+        email,
+        _id: { $ne: user.id },
+      });
       if (existingUser) {
         return res.send({
           success: false,
@@ -93,8 +93,53 @@ const updateProfileDetails = async (req, res) => {
   }
 };
 
+const updateProfilePicture = async (req, res) => {
+  try {
+    
+    if(!req.file){
+        return res.send({
+            success: false,
+            message: "No file uploaded",
+        })
+    }
+
+    const profilePicture = req.file.buffer;
+
+    const user = req.user;
+    if (!profilePicture) {
+      return res.send({
+        success: false,
+        message: "Profile picture is required",
+      });
+    }
+
+    const uploadResult = await uploadToCloudinary(
+      profilePicture,
+      "profile_pictures",
+    );
+
+    const updatedUser = await User.findByIdAndUpdate(
+      user.id,
+      { profilePicture: uploadResult },
+      { new: true },
+    );
+
+    return res.send({
+      success: true,
+      message: "Profile picture updated successfully",
+      data: updatedUser,
+    });
+  } catch (error) {
+    return res.send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   getCurrentUser,
   getOtherUsers,
   updateProfileDetails,
+  updateProfilePicture,
 };

@@ -26,9 +26,9 @@ export default function ChatItem({ chat }) {
       )}
     >
       <div className="relative">
-        {chat.profileImage && chat.profileImage.length > 0 ? (
+        {chat.profilePicture && chat.profilePicture.length > 0 ? (
           <img
-            src={chat.profileImage}
+            src={chat.profilePicture}
             alt={`${chat?.name[0]}${chat?.name.slice(-1)}`}
             className="w-12 h-12 rounded-full object-cover"
           />

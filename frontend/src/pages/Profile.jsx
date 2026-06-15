@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +10,7 @@ import {
   X,
   UserRound,
 } from 'lucide-react';
-import { logoutUser,deleteUserAccount, updateUserProfile } from '../store/auth/authThunk';
+import { logoutUser,deleteUserAccount, updateUserProfile, updateProfilePicture } from '../store/auth/authThunk';
 
 
 function Profile() {
@@ -22,6 +22,9 @@ function Profile() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [showImageConfirmModal, setShowImageConfirmModal] = useState(false);
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [previewImageUrl, setPreviewImageUrl] = useState('');
 
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
@@ -29,13 +32,23 @@ function Profile() {
     profileImage: currentUser?.profileImage || '',
   });
 
+
   const [passwordFormData, setPasswordFormData] = useState({
     currentPassword: '',
     newPassword: '',
     confirmPassword: '',
   });
 
-  const [imagePreview, setImagePreview] = useState(currentUser?.profileImage || '');
+  const [imagePreview, setImagePreview] = useState(currentUser?.profilePicture || '');
+
+  // Sync imagePreview with updated currentUser
+  useEffect(() => {
+    if (currentUser?.profilePicture) {
+      setImagePreview(currentUser.profilePicture);
+    } else if (currentUser?.profileImage) {
+      setImagePreview(currentUser.profileImage);
+    }
+  }, [currentUser]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,21 +57,39 @@ function Profile() {
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-        setFormData((prev) => ({
-          ...prev,
-          profileImage: reader.result,
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
+    if (!file) return;
+
+    // Show preview in confirmation modal
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreviewImageUrl(reader.result);
+      setSelectedImageFile(file);
+      setShowImageConfirmModal(true);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleConfirmImageUpload = () => {
+    if (!selectedImageFile) return;
+
+    // Upload to backend
+    const formData = new FormData();
+    formData.append("profilePicture", selectedImageFile);
+    dispatch(updateProfilePicture(formData));
+
+    // Close modal and reset
+    setShowImageConfirmModal(false);
+    setSelectedImageFile(null);
+    setPreviewImageUrl('');
+  };
+
+  const handleCancelImageUpload = () => {
+    setShowImageConfirmModal(false);
+    setSelectedImageFile(null);
+    setPreviewImageUrl('');
   };
 
   const handleSaveProfile = () => {
-    // TODO: Implement API call to update user profile
     dispatch(updateUserProfile(formData))
     setIsEditing(false);
   };
@@ -67,9 +98,9 @@ function Profile() {
     setFormData({
       name: currentUser?.name || '',
       email: currentUser?.email || '',
-      profileImage: currentUser?.profileImage || '',
+      profileImage: currentUser?.profilePicture || '',
     });
-    setImagePreview(currentUser?.profileImage || '');
+    setImagePreview(currentUser?.profilePicture || '');
     setIsEditing(false);
   };
 
@@ -87,9 +118,6 @@ function Profile() {
     setShowDeleteModal(false);
   };
 
-  const handleChangePassword = () => {
-
-  }
 
   const handlePasswordInputChange = (e) => {
     const { name, value } = e.target;
@@ -398,6 +426,45 @@ function Profile() {
                 className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 md:py-2 rounded-lg transition-colors text-sm md:text-base"
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirm Image Upload Modal */}
+      {showImageConfirmModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50 p-4">
+          <div className="bg-ig-dark-gray border border-ig-border rounded-2xl p-4 md:p-6 max-w-sm w-full space-y-4">
+            <h2 className="text-white text-lg font-semibold">Confirm Profile Picture</h2>
+            
+            {/* Image Preview */}
+            <div className="flex justify-center">
+              {previewImageUrl && (
+                <img
+                  src={previewImageUrl}
+                  alt="Preview"
+                  className="w-40 h-40 rounded-lg object-cover border-2 border-ig-border"
+                />
+              )}
+            </div>
+
+            <p className="text-ig-text-gray text-sm">
+              Are you sure you want to set this as your profile picture?
+            </p>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={handleCancelImageUpload}
+                className="flex-1 bg-ig-hover hover:bg-ig-border text-white font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmImageUpload}
+                className="flex-1 bg-ig-blue hover:bg-blue-600 text-white font-semibold py-2 rounded-lg transition-colors text-sm"
+              >
+                Confirm
               </button>
             </div>
           </div>
