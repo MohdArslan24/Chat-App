@@ -17,9 +17,9 @@ function ChatWinHeader() {
         >
           <ArrowLeft className="w-6 h-6 cursor-pointer" />
         </button>
-        {SelectedUser?.profileImage && SelectedUser?.profileImage.length > 0 ? (
+        {SelectedUser?.profilePicture && SelectedUser?.profilePicture.length > 0 ? (
           <img
-            src={SelectedUser?.profileImage}
+            src={SelectedUser?.profilePicture}
             alt={`${SelectedUser?.name[0]}${SelectedUser?.name.slice(-1)}`}
             className="w-12 h-12 rounded-full object-cover"
           />

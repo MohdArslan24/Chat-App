@@ -2,13 +2,14 @@ import React from "react";
 import { clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { UserRound } from "lucide-react";
+import { useDispatch, useSelector } from "react-redux";
 function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
 export default function MessageBubble({ messageBody, showAvatar }) {
-  
-  const isSent = messageBody.isSenderMe;
+   const { SelectedUser } = useSelector((state) => state.user);
+  const isSent = messageBody.isSenderMegit;
 
   const formattedTime = new Date(messageBody.createdAt).toLocaleTimeString([], {
     hour: "2-digit",
@@ -23,11 +24,17 @@ export default function MessageBubble({ messageBody, showAvatar }) {
       )}
     >
       {!isSent && (
-        <div className="w-7 h-7 mr-2 shrink-0 flex  items-end">
-          {showAvatar ? (
-            <UserRound />
+        <div className="w-8 h-8 mr-2 shrink-0 flex items-center justify-center overflow-hidden rounded-full">
+          {SelectedUser?.profilePicture && SelectedUser?.profilePicture.length > 0 ? (
+            <img
+              src={SelectedUser?.profilePicture}
+              alt={`${SelectedUser?.name[0]}${SelectedUser?.name.slice(-1)}`}
+              className="w-full h-full rounded-full object-cover"
+            />
           ) : (
-            <div className="w-7 h-7" /> // Placeholder for alignment
+            <div className="w-full h-full rounded-full bg-ig-hover flex items-center justify-center">
+              <UserRound />
+            </div>
           )}
         </div>
       )}
