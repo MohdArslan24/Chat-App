@@ -27,16 +27,15 @@ function MessageContainer() {
       <div className="flex-1 overflow-y-auto p-5 pb-0 flex flex-col">
         <div className="flex flex-col mt-4">
           {messages.map((msg, index) => {
-            const isMe = msg.sender?.toString() === currentUser?._id?.toString();
-            // Simplify showAvatar logic for brevity
-            const showAvatar = !isMe;
+            const isSenderMe = currentUser.id === msg.sender;
+            const showAvatar = !isSenderMe;
 
             return (
               <MessageBubble
                 key={msg._id || index}
                 messageBody={{
                   ...msg,
-                  senderId: isMe ? "me" : msg.sender,
+                  isSenderMe,
                   senderAvatar: SelectedUser?.profileImage,
                 }}
                 showAvatar={showAvatar}

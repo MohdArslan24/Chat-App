@@ -10,16 +10,20 @@ import {
   Heart,
   Send,
   UserRound,
+  Loader2,
 } from "lucide-react";
 
-import { sendMessage, getMessages } from "../store/chat/chatThunk";
+import axiosInstance from "../utils/axios";
+import { sendMessage, getMessages, sendImage } from "../store/chat/chatThunk";
 import { clearMessages } from "../store/chat/chatSlice";
+
 
 function MsgInput() {
   const dispatch = useDispatch();
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
   const [newMessage, setNewMessage] = useState("");
+  const [uploading, setUploading] = useState(false);
   const { currentUser } = useSelector((state) => state.auth);
   const { SelectedUser } = useSelector((state) => state.user);
   const { messages, typingStatus } = useSelector((state) => state.chat);
@@ -44,18 +48,23 @@ function MsgInput() {
 
     const formData = new FormData();
     formData.append("image", file);
+    console.log(formData)
 
     try {
       setUploading(true);
-      const res = await api.post("/upload", formData, {
+      const res = await axiosInstance.post("/message/upload", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      if (socket) {
-        socket.emit("send_message", {
-          receiverId: chat._id,
-          image: res.data.imageUrl,
-        });
+
+      if (res.data.success && SelectedUser?._id) {
+        dispatch(
+          sendMessage({
+            receiverId: SelectedUser._id,
+            image: res.data.data.imageUrl,
+            message: null,
+          }),
+        );
       }
     } catch (err) {
       console.error("Image upload failed", err);
@@ -129,13 +138,19 @@ function MsgInput() {
               accept="image/*"
               ref={fileInputRef}
               onChange={handleImageUpload}
+              disabled={uploading}
               className="hidden"
             />
             <button
-              className="p-2 text-white hover:opacity-70 transition-opacity"
+              className="p-2 text-white hover:opacity-70 transition-opacity disabled:opacity-50"
               onClick={() => fileInputRef.current.click()}
+              disabled={uploading}
             >
-              <ImageIcon className="w-6 h-6" />
+              {uploading ? (
+                <Loader2 className="w-6 h-6 animate-spin" />
+              ) : (
+                <ImageIcon className="w-6 h-6" />
+              )}
             </button>
             <button className="p-2 text-white hover:opacity-70 transition-opacity">
               <Heart className="w-6 h-6" />

@@ -2,20 +2,21 @@ const Message = require("../models/message.model");
 const Conversation = require("../models/conversation.model");
 const User = require("../models/user.model");
 const { getIO, getUserId } = require("../socket/socket");
+const uploadToCloudinary = require("../services/uploadToCloudinary");
 
 // Send a message
 const sendMessage = async (req, res) => {
   try {
     const{  receiverId } = req.params
     const senderId = req.user.id;
-    const { message } = req.body;
+    const { message, image } = req.body;
     
 
     // Validation
-    if (!receiverId || !message) {
+    if (!receiverId || (!message && !image)) {
       return res.status(422).send({
         success: false,
-        message: "Receiver ID and message are required.",
+        message: "Receiver ID and message or image are required.",
       });
     }
 
@@ -38,7 +39,7 @@ const sendMessage = async (req, res) => {
       });
     }
 
-     if (message.trim().length === 0) {
+    if (message && message.trim().length === 0 && !image) {
       return res.status(422).send({
         success: false,
         message: "Message cannot be empty.",
@@ -49,7 +50,8 @@ const sendMessage = async (req, res) => {
     const newMessage = await Message.create({
       sender: senderId,
       receiver: receiverId,
-      message: message.trim(),
+      message: message ? message.trim() : null,
+      image: image || null,
     });
 
     // Populate sender and receiver details
@@ -298,6 +300,34 @@ const getUnreadCount = async (req, res) => {
   }
 };
 
+// Upload image for messages
+const uploadImage = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(422).send({
+        success: false,
+        message: "No file uploaded",
+      });
+    }
+
+    const uploadResult = await uploadToCloudinary(req.file.buffer);
+    console.log(uploadResult)
+
+    return res.status(200).send({
+      success: true,
+      message: "Image uploaded successfully",
+      data: {
+        imageUrl: uploadResult,
+      },
+    });
+  } catch (error) {
+    return res.status(500).send({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 module.exports = {
   sendMessage,
   getMessages,
@@ -305,4 +335,5 @@ module.exports = {
   getConversations,
   deleteMessage,
   getUnreadCount,
+  uploadImage,
 };

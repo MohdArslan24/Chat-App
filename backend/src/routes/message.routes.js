@@ -1,5 +1,6 @@
 const express = require("express")
 const checkForAuthCookie = require("../middlewares/protect")
+const upload = require("../middlewares/upload")
 const {
   sendMessage,
   getMessages,
@@ -7,12 +8,16 @@ const {
   getConversations,
   deleteMessage,
   getUnreadCount,
+  uploadImage,
 } = require("../controller/message.controller")
 
 const router = express.Router()
 
 // All routes require authentication
 router.use(checkForAuthCookie)
+
+// Upload image
+router.post('/upload', upload.single("image"), uploadImage)
 
 // Send a message
 router.post('/send/:receiverId', sendMessage)

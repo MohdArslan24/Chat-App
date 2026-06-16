@@ -8,7 +8,7 @@ function cn(...inputs) {
 
 export default function MessageBubble({ messageBody, showAvatar }) {
   
-  const isSent = messageBody.senderId === "me";
+  const isSent = messageBody.isSenderMe;
 
   const formattedTime = new Date(messageBody.createdAt).toLocaleTimeString([], {
     hour: "2-digit",

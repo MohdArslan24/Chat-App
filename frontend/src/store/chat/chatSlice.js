@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import api from "../../utils/axios";
-import { sendMessage, getMessages } from "./chatThunk";
+import { sendMessage, getMessages, sendImage } from "./chatThunk";
 
 const initialState = {
   chats: null, // List of conversations
@@ -8,7 +8,7 @@ const initialState = {
   loading: false,
   typingStatus: {
     isTyping: false,
-    senderId: null
+    senderId: null,
   }, // Mapping receiverId to boolean
 };
 
@@ -19,7 +19,7 @@ const chatSlice = createSlice({
     clearMessages: (state, action) => {
       state.messages = [];
     },
-    
+
     setNewMessage: (state, action) => {
       const newMessage = action.payload;
       const oldMessages = state.messages ?? [];
@@ -27,7 +27,7 @@ const chatSlice = createSlice({
     },
     setTypingStatus: (state, action) => {
       state.typingStatus = action.payload;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -42,9 +42,20 @@ const chatSlice = createSlice({
       })
       .addCase(getMessages.rejected, (state, action) => {
         state.error = action.payload?.message || "Login failed";
+      })
+      .addCase(sendImage.fulfilled, (state, action) => {
+        // Image URL is returned, but we don't update messages here since the message with the image will be added via sendMessage
+      })
+      .addCase(sendImage.rejected, (state, action) => {
+        state.error = action.payload?.message || "Image upload failed";
       });
   },
 });
 
-export const { setActiveChatId, setNewMessage, clearMessages, setTypingStatus } = chatSlice.actions;
+export const {
+  setActiveChatId,
+  setNewMessage,
+  clearMessages,
+  setTypingStatus,
+} = chatSlice.actions;
 export default chatSlice.reducer;
