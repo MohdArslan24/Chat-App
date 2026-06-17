@@ -9,7 +9,8 @@ function cn(...inputs) {
 
 export default function MessageBubble({ messageBody, showAvatar }) {
    const { SelectedUser } = useSelector((state) => state.user);
-  const isSent = messageBody.isSenderMegit;
+
+  const isSent = messageBody.isSenderMe;
 
   const formattedTime = new Date(messageBody.createdAt).toLocaleTimeString([], {
     hour: "2-digit",
