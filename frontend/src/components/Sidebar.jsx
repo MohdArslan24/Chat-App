@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { ChevronDown, Edit, Search, X } from "lucide-react";
+import { ChevronDown, Edit, Search, X, UserRound } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import api from "../utils/axios";
 import ChatItem from "./ChatItem";
@@ -36,11 +36,24 @@ export default function Sidebar() {
 
       {/* Header */}
       <div className="h-[75px] px-5 flex items-center justify-between border-b border-ig-border shrink-0">
-        <div className="flex items-center gap-1 cursor-pointer" onClick={() => navigate("/profile")} >
+        <div className="flex gap-3 cursor-pointer"  onClick={() => navigate("/profile")}>
+        {currentUser?.profilePicture && currentUser?.profilePicture.length > 0 ? (
+            <img
+              src={currentUser?.profilePicture}
+              alt={`${currentUser?.name[0]}${currentUser?.name.slice(-1)}`}
+              className="w-12 h-12 rounded-full object-cover"
+            />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-ig-hover flex items-center justify-center">
+              <UserRound />
+            </div>
+          )}
+        <div className="flex items-center gap-1 cursor-pointer" >
           <span className="font-bold text-xl text-white">
             {currentUser?.name || "_user"}
           </span>
           
+        </div>
         </div>
         <button className="text-white hover:opacity-70 transition-opacity">
           <Edit className="w-6 h-6" />

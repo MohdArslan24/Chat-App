@@ -14,7 +14,7 @@ export default function ChatItem({ chat }) {
   const dispatch = useDispatch();
 
   const {onlineUsers} = useSelector(state => state.socket);
-
+  const {messages} = useSelector(state => state.chat)
 
   return (
     <div
@@ -59,21 +59,18 @@ export default function ChatItem({ chat }) {
             </span>
           )}
         </div>
-        <div className="flex items-center mt-1">
+        {/* <div className="flex items-center mt-1">
           <p
-            className={cn(
-              "text-sm truncate",
-              chat?.unread
-                ? "font-bold text-white"
-                : "text-ig-text-gray font-normal",
-            )}
+            className={
+              "text-[12px] truncate font-bold text-white"}
           >
-            {chat?.lastMessage}
+            New Message
           </p>
           {chat?.unread && (
             <span className="w-2 h-2 bg-ig-blue rounded-full ml-2 shrink-0" />
           )}
-        </div>
+        </div> */}
+
       </div>
     </div>
   );

@@ -50,6 +50,7 @@ const signup = async (req, res) => {
         message: "Account created successfully",
         username: user.name,
         email: user.email,
+        profilePicture: user.profilePicture,
         token: token,
       });
   } catch (error) {
